@@ -18,7 +18,14 @@ class InvoiceParser {
             invoice: {},
             items: [],
             summary: {},
-            footer: {}
+            footer: {},
+            // Cover letter data for template generation
+            coverLetter: {
+                greeting: '',
+                content: '',
+                closing: 'Sincerely,'
+            },
+            cc: [] // CC recipients for business correspondence
         };
     }
 
