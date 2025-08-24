@@ -31,8 +31,11 @@ class TemplateInvoiceGenerator {
             // Colors and styling matching template
             colors: {
                 text: '#000000',
-                tableHeader: '#f0f0f0',
-                tableBorder: '#000000'
+                titleText: '#1d4ed8',          // Deeper blue for titles
+                tableHeader: '#334155',        // Professional dark slate for table header
+                tableHeaderText: '#ffffff',    // White text on dark header
+                tableBorder: '#0f172a',        // Very dark border
+                alternatingRow: '#f8fafc'      // Very light blue-gray for alternating rows
             },
             margins: {
                 top: 72,    // 1 inch
@@ -86,6 +89,22 @@ class TemplateInvoiceGenerator {
         const { margins } = this.options;
         let currentY = margins.top;
 
+        // Try to add header graphics if available
+        try {
+            const logoPath = path.join(__dirname, '../template-logo.png');
+            if (fs.existsSync(logoPath)) {
+                // Add logo/header graphics matching template position
+                doc.image(logoPath, margins.left, currentY - 20, {
+                    width: 200,
+                    height: 120
+                });
+                currentY += 80; // Adjust position after logo
+            }
+        } catch (error) {
+            // Continue without logo if there are issues
+            console.log('Note: Header graphics not available, continuing with text-only header');
+        }
+
         // Sender information (top left, matching template layout)
         doc.font(this.options.fonts.regular)
            .fontSize(this.options.fontSize.letterHead)
@@ -109,12 +128,14 @@ class TemplateInvoiceGenerator {
         // Invoice title and date (matching template position)
         doc.font(this.options.fonts.bold)
            .fontSize(this.options.fontSize.invoiceTitle)
+           .fillColor(this.options.colors.titleText)  // Use blue title color
            .text(`Invoice #${data.invoice?.number || '0001'} for Services Rendered`, margins.left, currentY);
         
         currentY += 20;
         
         doc.font(this.options.fonts.regular)
            .fontSize(this.options.fontSize.letterHead)
+           .fillColor(this.options.colors.text)  // Reset to black for date
            .text(this.formatDate(data.invoice?.date || new Date()), margins.left, currentY);
 
         currentY += 30;
@@ -245,7 +266,7 @@ class TemplateInvoiceGenerator {
         doc.rect(tableLeft, tableTop, tableWidth, rowHeight)
            .fillAndStroke(this.options.colors.tableHeader, this.options.colors.tableBorder);
 
-        doc.fillColor(this.options.colors.text)
+        doc.fillColor(this.options.colors.tableHeaderText)  // White text on colored header
            .font(this.options.fonts.bold)
            .fontSize(this.options.fontSize.tableHeader);
 
@@ -272,7 +293,7 @@ class TemplateInvoiceGenerator {
             // Row background (alternating for readability)
             if (index % 2 === 1) {
                 doc.rect(tableLeft, currentY, tableWidth, actualRowHeight)
-                   .fillColor('#f9f9f9')
+                   .fillColor(this.options.colors.alternatingRow)
                    .fill();
             }
 
@@ -308,10 +329,11 @@ class TemplateInvoiceGenerator {
         const totalY = currentY;
         
         doc.rect(tableLeft, totalY, tableWidth, rowHeight)
-           .fillAndStroke('#f0f0f0', this.options.colors.tableBorder);
+           .fillAndStroke(this.options.colors.tableHeader, this.options.colors.tableBorder);
 
         doc.font(this.options.fonts.bold)
            .fontSize(this.options.fontSize.tableHeader)
+           .fillColor(this.options.colors.tableHeaderText)  // White text on colored background
            .text('Total:', tableLeft + 5, totalY + 8)
            .text(data.summary?.total || this.calculateTotal(processedItems), 
                  tableLeft + tableWidth - 125, totalY + 8, {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Template PDF Analysis</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: white; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .page { margin-bottom: 30px; border: 1px solid #ddd; padding: 20px; }
+        .image-container { text-align: center; margin: 20px 0; }
+        img { max-width: 100%; height: auto; border: 2px solid #333; }
+        .analysis { background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #007bff; }
+        h1 { color: #2c3e50; text-align: center; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h3 { color: #2980b9; }
+        ul { line-height: 1.6; }
+        li { margin-bottom: 5px; }
+        .critical { background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; }
+        .color-analysis { background: #e8f5e8; padding: 10px; margin: 10px 0; border-left: 4px solid #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Template PDF Visual Analysis</h1>
+        <p><strong>Goal:</strong> Analyze the visual styling of the template PDF to replicate exact fonts, colors, and layout in the Node.js generator.</p>
+        
+        <div class="page">
+            <h2>Page 1: Cover Letter Analysis</h2>
+            <div class="image-container">
+                <img src="template-page-1.png" alt="Template Page 1 - Cover Letter" />
+            </div>
+            <div class="analysis">
+                <h3>Visual Elements to Replicate:</h3>
+                <ul>
+                    <li><strong>Font Family:</strong> Analyze the font - appears to be Times Roman/serif font</li>
+                    <li><strong>Header Text Color:</strong> Check if title text has specific color vs black</li>
+                    <li><strong>Logo/Graphics:</strong> Note any header graphics or logos</li>
+                    <li><strong>Layout Structure:</strong> Sender info positioning, spacing</li>
+                    <li><strong>Date Format:</strong> Professional date formatting style</li>
+                </ul>
+            </div>
+            <div class="critical">
+                <strong>CRITICAL:</strong> Focus on title text color and any embedded graphics in header
+            </div>
+        </div>
+        
+        <div class="page">
+            <h2>Page 2: Invoice Table Analysis</h2>
+            <div class="image-container">
+                <img src="template-page-2.png" alt="Template Page 2 - Invoice Table" />
+            </div>
+            <div class="analysis">
+                <h3>Table Styling Requirements:</h3>
+                <ul>
+                    <li><strong>Header Row Background:</strong> Identify the exact background color of first row</li>
+                    <li><strong>Alternating Rows:</strong> Document the background colors for alternating rows</li>
+                    <li><strong>Font Consistency:</strong> Ensure table uses same font as page 1</li>
+                    <li><strong>Border Style:</strong> Note border colors, thickness, and style</li>
+                    <li><strong>Column Alignment:</strong> Check text alignment within columns</li>
+                    <li><strong>Cell Padding:</strong> Observe spacing within cells</li>
+                </ul>
+            </div>
+            <div class="color-analysis">
+                <strong>COLOR ANALYSIS NEEDED:</strong>
+                <ul>
+                    <li>Header row background color (likely gray/blue tone)</li>
+                    <li>Alternating row colors (white vs light gray)</li>
+                    <li>Text colors throughout</li>
+                    <li>Border colors</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="critical">
+            <h3>Next Steps:</h3>
+            <ol>
+                <li>Examine these images closely to identify exact colors</li>
+                <li>Update TemplateInvoiceGenerator.js with correct styling</li>
+                <li>Generate test PDF with current data</li>
+                <li>Compare visually side-by-side</li>
+                <li>Iterate until exact match</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
