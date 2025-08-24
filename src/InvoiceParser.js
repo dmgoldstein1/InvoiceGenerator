@@ -125,14 +125,14 @@ class InvoiceParser {
         // Handle specific sections
         if (header.includes('company') || header.includes('from')) {
             this.parseCompanyInfo(content, result.company);
-        } else if (header.includes('client') || header.includes('to') || header.includes('bill')) {
+        } else if (header.includes('summary') || header.includes('total')) {
+            this.parseSummary(content, result.summary);
+        } else if (header.includes('client') || (header.includes('to') && !header.includes('total')) || header.includes('bill')) {
             this.parseCompanyInfo(content, result.client);
         } else if (header.includes('invoice') || header.includes('details')) {
             this.parseInvoiceDetails(content, result.invoice);
         } else if (header.includes('items') || header.includes('table') || header.includes('services')) {
             this.parseItemsTable(content, result.items);
-        } else if (header.includes('summary') || header.includes('total')) {
-            this.parseSummary(content, result.summary);
         } else if (header.includes('footer') || header.includes('notes') || header.includes('terms')) {
             this.parseFooter(content, result.footer);
         }
@@ -205,10 +205,25 @@ class InvoiceParser {
     }
 
     /**
-     * Parse items table from markdown table format
+     * Parse items table from markdown table format or YAML format
      */
     parseItemsTable(content, targetArray) {
         const lines = content.split('\n').filter(line => line.trim());
+        
+        // Check if content is YAML format (contains "items:" and "-")
+        if (content.includes('items:') && content.includes('- description:')) {
+            try {
+                const yamlData = yaml.load(content);
+                if (yamlData && yamlData.items && Array.isArray(yamlData.items)) {
+                    targetArray.push(...yamlData.items);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Failed to parse items as YAML, falling back to table parsing');
+            }
+        }
+        
+        // Original markdown table parsing logic
         let headerFound = false;
         let headers = [];
 
@@ -238,16 +253,44 @@ class InvoiceParser {
     }
 
     /**
-     * Parse summary section with totals
+     * Parse summary section with totals - handle both YAML and key-value formats
      */
     parseSummary(content, target) {
+        // Try YAML parsing first
+        if (content.includes('summary:')) {
+            try {
+                const yamlData = yaml.load(content);
+                if (yamlData && yamlData.summary && typeof yamlData.summary === 'object') {
+                    Object.assign(target, yamlData.summary);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Failed to parse summary as YAML, falling back to key-value parsing');
+            }
+        }
+        
+        // Fall back to key-value parsing
         this.parseKeyValuePairs(content, target);
     }
 
     /**
-     * Parse footer section
+     * Parse footer section - handle both YAML and key-value formats
      */
     parseFooter(content, target) {
+        // Try YAML parsing first
+        if (content.includes('footer:')) {
+            try {
+                const yamlData = yaml.load(content);
+                if (yamlData && yamlData.footer && typeof yamlData.footer === 'object') {
+                    Object.assign(target, yamlData.footer);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Failed to parse footer as YAML, falling back to key-value parsing');
+            }
+        }
+        
+        // Fall back to original parsing logic
         const lines = content.split('\n');
         let currentKey = null;
         let currentContent = [];
