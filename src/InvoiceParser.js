@@ -44,7 +44,50 @@ class InvoiceParser {
     parseContent(content) {
         const result = { ...this.defaultStructure };
         
-        // Split content into sections
+        // Check if the content is a YAML document
+        if (content.trim().startsWith('---')) {
+            try {
+                // Find the YAML content after the front matter
+                const lines = content.split('\n');
+                let yamlStart = -1;
+                let dashCount = 0;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].trim() === '---') {
+                        dashCount++;
+                        if (dashCount === 2) {
+                            yamlStart = i + 1;
+                            break;
+                        }
+                    }
+                }
+                
+                if (yamlStart !== -1) {
+                    // Get all content after the second ---
+                    const yamlContent = lines.slice(yamlStart).join('\n').trim();
+                    
+                    if (yamlContent) {
+                        const yamlData = yaml.load(yamlContent);
+                        if (yamlData && typeof yamlData === 'object') {
+                            // Process the YAML data
+                            Object.assign(result, yamlData);
+                            
+                            // Process items for auto-calculation
+                            if (result.items && Array.isArray(result.items)) {
+                                result.items = result.items.map(item => this.processItem(item));
+                            }
+                            
+                            this.validateInvoiceData(result);
+                            return result;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to parse as YAML, falling back to section parsing:', e.message);
+            }
+        }
+        
+        // Fallback to section-based parsing for markdown format
         const sections = this.splitIntoSections(content);
         
         // Parse each section
@@ -206,6 +249,7 @@ class InvoiceParser {
 
     /**
      * Parse items table from markdown table format or YAML format
+     * Now supports auto-calculation and enhanced fields (date, hours, hourlyRate)
      */
     parseItemsTable(content, targetArray) {
         const lines = content.split('\n').filter(line => line.trim());
@@ -215,7 +259,9 @@ class InvoiceParser {
             try {
                 const yamlData = yaml.load(content);
                 if (yamlData && yamlData.items && Array.isArray(yamlData.items)) {
-                    targetArray.push(...yamlData.items);
+                    // Process each item for auto-calculation and field normalization
+                    const processedItems = yamlData.items.map(item => this.processItem(item));
+                    targetArray.push(...processedItems);
                     return;
                 }
             } catch (e) {
@@ -235,7 +281,7 @@ class InvoiceParser {
                 const cells = trimmed.split('|').map(cell => cell.trim()).filter(cell => cell);
                 
                 if (!headerFound) {
-                    headers = cells.map(h => h.toLowerCase().replace(/\s+/g, ''));
+                    headers = cells.map(h => this.normalizeColumnHeader(h));
                     headerFound = true;
                 } else {
                     const item = {};
@@ -245,11 +291,105 @@ class InvoiceParser {
                         }
                     });
                     if (Object.keys(item).length > 0) {
-                        targetArray.push(item);
+                        targetArray.push(this.processItem(item));
                     }
                 }
             }
         });
+    }
+
+    /**
+     * Normalize column headers to standard field names
+     */
+    normalizeColumnHeader(header) {
+        const normalized = header.toLowerCase().replace(/\s+/g, '');
+        
+        // Map various column header variations to standard field names
+        const headerMap = {
+            'description': 'description',
+            'desc': 'description',
+            'item': 'description',
+            'service': 'description',
+            'task': 'description',
+            
+            'date': 'date',
+            'workdate': 'date',
+            'servicedate': 'date',
+            
+            'quantity': 'quantity',
+            'qty': 'quantity',
+            'amount': 'quantity',
+            'units': 'quantity',
+            
+            'hours': 'hours',
+            'hrs': 'hours',
+            'time': 'hours',
+            'duration': 'hours',
+            'numberofhours': 'hours',
+            
+            'rate': 'rate',
+            'unitrate': 'rate',
+            'price': 'rate',
+            'cost': 'rate',
+            
+            'hourlyrate': 'hourlyRate',
+            'hrrate': 'hourlyRate',
+            'hourlyprice': 'hourlyRate',
+            'rateperhour': 'hourlyRate',
+            
+            'amount': 'amount',
+            'total': 'amount',
+            'subtotal': 'amount',
+            'linetotal': 'amount'
+        };
+        
+        return headerMap[normalized] || normalized;
+    }
+
+    /**
+     * Process an individual item: auto-calculate amount and normalize fields
+     */
+    processItem(item) {
+        const processedItem = { ...item };
+        
+        // Auto-calculate amount if not provided but quantity/hours and rate provided
+        if (!processedItem.amount) {
+            const quantity = this.parseNumericValue(processedItem.quantity || processedItem.hours);
+            const rate = this.parseNumericValue(processedItem.rate || processedItem.hourlyRate);
+            
+            if (quantity !== null && rate !== null) {
+                const calculatedAmount = quantity * rate;
+                processedItem.amount = this.formatCurrency(calculatedAmount);
+            }
+        }
+        
+        return processedItem;
+    }
+
+    /**
+     * Parse numeric value from string (handles currency symbols, etc.)
+     */
+    parseNumericValue(value) {
+        if (!value) return null;
+        
+        // Remove currency symbols, commas, and extra spaces
+        const cleanValue = value.toString().replace(/[$,\s]/g, '');
+        
+        // Handle hour formats like "5 hrs", "10.5 hours"
+        const hourMatch = cleanValue.match(/^(\d+(?:\.\d+)?)\s*h/i);
+        if (hourMatch) {
+            return parseFloat(hourMatch[1]);
+        }
+        
+        const numericValue = parseFloat(cleanValue);
+        return isNaN(numericValue) ? null : numericValue;
+    }
+
+    /**
+     * Format a number as currency
+     */
+    formatCurrency(amount) {
+        return `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
     }
 
     /**

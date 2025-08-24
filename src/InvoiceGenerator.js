@@ -234,23 +234,21 @@ class InvoiceGenerator {
 
     /**
      * Generate the items table with alternating row colors and proper formatting
-     * Supports merged cells and professional styling to match the template
+     * Supports merged cells, dynamic columns, and auto-calculation
      */
     generateItemsTable(doc, items) {
         if (!items || !Array.isArray(items)) return;
+
+        // Auto-calculate amounts if missing and ensure all items have amounts
+        const processedItems = items.map(item => this.processItemForGeneration(item));
 
         const tableTop = doc.y;
         const tableLeft = 50;
         const tableWidth = 495;
         const baseRowHeight = 30;
         
-        // Enhanced column configuration with better proportions
-        const columns = [
-            { header: 'Description', width: 250, x: tableLeft, align: 'left' },
-            { header: 'Qty', width: 60, x: tableLeft + 250, align: 'center' },
-            { header: 'Rate', width: 90, x: tableLeft + 310, align: 'right' },
-            { header: 'Amount', width: 95, x: tableLeft + 400, align: 'right' }
-        ];
+        // Dynamically determine which columns to show based on data
+        const columns = this.generateColumnConfig(processedItems, tableLeft, tableWidth);
 
         // Draw header row with enhanced styling
         doc.rect(tableLeft, tableTop, tableWidth, baseRowHeight)
@@ -276,7 +274,7 @@ class InvoiceGenerator {
         // Reset font for data rows
         doc.font('Helvetica');
 
-        items.forEach((item, index) => {
+        processedItems.forEach((item, index) => {
             const description = item.description || '';
             const isNewGroup = description !== lastDescription && lastDescription !== '';
             const isMerged = description === lastDescription;
@@ -292,40 +290,38 @@ class InvoiceGenerator {
 
             doc.fill(this.options.colors.primary);
 
-            // Handle description column (support for merged cells)
-            if (!isMerged) {
-                // Draw description for new groups
-                doc.fontSize(this.options.fontSize.body)
-                   .text(description, columns[0].x + 8, currentY + 8, {
-                       width: columns[0].width - 16,
-                       align: 'left',
-                       lineGap: 2
-                   });
-                lastDescription = description;
-                mergedRowStart = currentY;
-                mergedRowCount = 1;
-            } else {
-                mergedRowCount++;
-                // For merged cells, we'll draw a border line to separate but keep description empty
-                doc.moveTo(columns[1].x, currentY)
-                   .lineTo(tableLeft + tableWidth, currentY)
-                   .stroke(this.options.colors.border);
-            }
-
-            // Draw other columns
-            doc.text(item.quantity || '', columns[1].x + 8, currentY + 8, {
-                width: columns[1].width - 16,
-                align: columns[1].align
-            });
-
-            doc.text(item.rate || '', columns[2].x + 8, currentY + 8, {
-                width: columns[2].width - 16,
-                align: columns[2].align
-            });
-
-            doc.text(item.amount || '', columns[3].x + 8, currentY + 8, {
-                width: columns[3].width - 16,
-                align: columns[3].align
+            // Draw all columns dynamically
+            columns.forEach((col, colIndex) => {
+                const value = this.getItemValue(item, col.field);
+                
+                if (col.field === 'description') {
+                    // Handle description column (support for merged cells)
+                    if (!isMerged) {
+                        doc.fontSize(this.options.fontSize.body)
+                           .text(value, col.x + 8, currentY + 8, {
+                               width: col.width - 16,
+                               align: col.align,
+                               lineGap: 2
+                           });
+                        lastDescription = description;
+                        mergedRowStart = currentY;
+                        mergedRowCount = 1;
+                    } else {
+                        mergedRowCount++;
+                        // For merged cells, draw a border line to separate but keep description empty
+                        if (colIndex < columns.length - 1) {
+                            doc.moveTo(columns[colIndex + 1].x, currentY)
+                               .lineTo(tableLeft + tableWidth, currentY)
+                               .stroke(this.options.colors.border);
+                        }
+                    }
+                } else {
+                    // Handle all other columns normally
+                    doc.text(value, col.x + 8, currentY + 8, {
+                        width: col.width - 16,
+                        align: col.align
+                    });
+                }
             });
 
             currentY += rowHeight;
@@ -346,6 +342,152 @@ class InvoiceGenerator {
            .stroke(this.options.colors.border);
 
         doc.y = currentY + 25;
+    }
+
+    /**
+     * Process an item for generation: auto-calculate amount if needed
+     */
+    processItemForGeneration(item) {
+        const processedItem = { ...item };
+        
+        // Auto-calculate amount if not provided but quantity/hours and rate provided
+        if (!processedItem.amount) {
+            const quantity = this.parseNumericValue(processedItem.quantity || processedItem.hours);
+            const rate = this.parseNumericValue(processedItem.rate || processedItem.hourlyRate);
+            
+            if (quantity !== null && rate !== null) {
+                const calculatedAmount = quantity * rate;
+                processedItem.amount = this.formatCurrency(calculatedAmount);
+            }
+        }
+        
+        return processedItem;
+    }
+
+    /**
+     * Parse numeric value from string (handles currency symbols, etc.)
+     */
+    parseNumericValue(value) {
+        if (!value) return null;
+        
+        // Remove currency symbols, commas, and extra spaces
+        const cleanValue = value.toString().replace(/[$,\s]/g, '');
+        
+        // Handle hour formats like "5 hrs", "10.5 hours"
+        const hourMatch = cleanValue.match(/^(\d+(?:\.\d+)?)\s*h/i);
+        if (hourMatch) {
+            return parseFloat(hourMatch[1]);
+        }
+        
+        const numericValue = parseFloat(cleanValue);
+        return isNaN(numericValue) ? null : numericValue;
+    }
+
+    /**
+     * Format a number as currency
+     */
+    formatCurrency(amount) {
+        return `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+    }
+
+    /**
+     * Generate dynamic column configuration based on available data
+     */
+    generateColumnConfig(items, tableLeft, tableWidth) {
+        // Determine which columns have data
+        const hasDate = items.some(item => item.date);
+        const hasHours = items.some(item => item.hours);
+        const hasQuantity = items.some(item => item.quantity && !item.hours);
+        const hasRate = items.some(item => item.rate);
+        const hasHourlyRate = items.some(item => item.hourlyRate);
+        
+        const columns = [];
+        let currentX = tableLeft;
+        
+        // Always show description
+        const descWidth = hasDate ? 180 : (hasHours || hasQuantity ? 220 : 250);
+        columns.push({
+            field: 'description',
+            header: 'Description',
+            width: descWidth,
+            x: currentX,
+            align: 'left'
+        });
+        currentX += descWidth;
+        
+        // Date column if present
+        if (hasDate) {
+            columns.push({
+                field: 'date',
+                header: 'Date',
+                width: 80,
+                x: currentX,
+                align: 'center'
+            });
+            currentX += 80;
+        }
+        
+        // Quantity/Hours column
+        if (hasHours) {
+            columns.push({
+                field: 'hours',
+                header: 'Hours',
+                width: 60,
+                x: currentX,
+                align: 'center'
+            });
+        } else if (hasQuantity) {
+            columns.push({
+                field: 'quantity',
+                header: 'Qty',
+                width: 60,
+                x: currentX,
+                align: 'center'
+            });
+        }
+        if (hasHours || hasQuantity) {
+            currentX += 60;
+        }
+        
+        // Rate column
+        if (hasHourlyRate) {
+            columns.push({
+                field: 'hourlyRate',
+                header: 'Hourly Rate',
+                width: 85,
+                x: currentX,
+                align: 'right'
+            });
+            currentX += 85;
+        } else if (hasRate) {
+            columns.push({
+                field: 'rate',
+                header: 'Rate',
+                width: 85,
+                x: currentX,
+                align: 'right'
+            });
+            currentX += 85;
+        }
+        
+        // Amount column (always present)
+        const remainingWidth = tableLeft + tableWidth - currentX;
+        columns.push({
+            field: 'amount',
+            header: 'Amount',
+            width: remainingWidth,
+            x: currentX,
+            align: 'right'
+        });
+        
+        return columns;
+    }
+
+    /**
+     * Get the appropriate value for a field from an item
+     */
+    getItemValue(item, field) {
+        return item[field] || '';
     }
 
     /**

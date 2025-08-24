@@ -56,7 +56,7 @@ await generateFromData(invoiceData, 'output.pdf');
 
 ## Input Format
 
-The invoice generator supports two input formats:
+The invoice generator supports two input formats with enhanced auto-calculation capabilities:
 
 ### 1. YAML Format (Recommended)
 
@@ -84,19 +84,29 @@ invoice:
   dueDate: "2024-02-15"
 
 items:
+  # Basic format with auto-calculation
   - description: "Web Design Services"
     quantity: "1"
     rate: "$2,500.00"
-    amount: "$2,500.00"
+    # amount will be auto-calculated as $2,500.00
+  
+  # Date-based hourly tracking
   - description: "Development Work"
-    quantity: "40 hrs"
-    rate: "$75.00"
-    amount: "$3,000.00"
+    date: "2024-01-16"
+    hours: "8"
+    hourlyRate: "$150.00"
+    # amount will be auto-calculated as $1,200.00
+  
+  # Mixed format
+  - description: "Project Management"
+    quantity: "20"
+    rate: "$100.00"
+    # amount will be auto-calculated as $2,000.00
 
 summary:
-  subtotal: "$5,500.00"
-  tax: "$440.00"
-  total: "$5,940.00"
+  subtotal: "$5,700.00"
+  tax: "$456.00"
+  total: "$6,156.00"
 
 footer:
   notes: "Thank you for your business!"
@@ -126,20 +136,48 @@ Due Date: 2024-02-15
 
 ## Items and Services
 
-| Description | Quantity | Rate | Amount |
-|-------------|----------|------|--------|
-| Web Design | 1 | $2,500.00 | $2,500.00 |
-| Development | 40 hrs | $75.00 | $3,000.00 |
+| Date | Description | Hours | Hourly Rate |
+|------|-------------|-------|-------------|
+| 2024-01-15 | Web Design | 8 | $150.00 |
+| 2024-01-16 | Development | 10 | $125.00 |
+| 2024-01-17 | Testing | 4 | $100.00 |
 
 ## Summary
-Subtotal: $5,500.00
-Tax: $440.00
-Total: $5,940.00
+Subtotal: $2,850.00
+Tax: $228.00
+Total: $3,078.00
 
 ## Footer
 Notes: Thank you for your business!
 Terms: Payment due within 30 days.
 ```
+
+### Enhanced Features
+
+#### ✨ **Auto-Calculation**
+- **No manual math required**: Simply provide `quantity` and `rate`, or `hours` and `hourlyRate`
+- **Automatic amount calculation**: The system calculates `amount = quantity × rate` or `amount = hours × hourlyRate`
+- **Currency formatting**: Results are properly formatted with commas and dollar signs
+
+#### 📅 **Flexible Column Support**
+The system automatically detects and displays relevant columns based on your data:
+- **Date**: When work was performed (optional)
+- **Description**: Service or item description (required)
+- **Quantity/Hours**: Amount of work or items (optional)
+- **Rate/Hourly Rate**: Price per unit or hour (optional)
+- **Amount**: Total cost (auto-calculated or manual)
+
+#### 🎯 **Dynamic Table Layout**
+- Tables adapt automatically to show only relevant columns
+- Professional formatting with proper alignment
+- Supports mixed data types in the same invoice
+
+### Supported Column Combinations
+
+1. **Basic**: Description, Quantity, Rate, Amount
+2. **Time-based**: Date, Description, Hours, Hourly Rate, Amount  
+3. **Mixed**: Date, Description, Quantity, Rate, Amount
+4. **Custom**: Any combination of the above fields
 
 ## File Structure
 
