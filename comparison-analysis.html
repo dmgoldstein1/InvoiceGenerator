@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Template vs Generated PDF Comparison</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: white; 
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+        .comparison-set { 
+            margin-bottom: 40px; 
+            border: 2px solid #333; 
+            padding: 20px; 
+            background: #f8f9fa;
+        }
+        .page-comparison { 
+            display: flex; 
+            gap: 20px; 
+            align-items: flex-start;
+        }
+        .image-container { 
+            flex: 1; 
+            text-align: center; 
+        }
+        .image-container h3 {
+            margin: 0 0 10px 0;
+            padding: 10px;
+            background: #2563eb;
+            color: white;
+            border-radius: 5px;
+        }
+        .template { background: #dc2626 !important; }
+        .generated { background: #16a34a !important; }
+        
+        img { 
+            max-width: 100%; 
+            height: auto; 
+            border: 3px solid #333; 
+            border-radius: 5px;
+        }
+        h1 { 
+            color: #1e3a8a; 
+            text-align: center; 
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h2 { 
+            color: #374151; 
+            border-bottom: 3px solid #3b82f6; 
+            padding-bottom: 10px; 
+        }
+        .analysis { 
+            background: #fff3cd; 
+            border: 2px solid #f59e0b; 
+            padding: 15px; 
+            margin: 20px 0; 
+            border-radius: 8px;
+        }
+        .success { 
+            background: #d1fae5; 
+            border-color: #10b981; 
+        }
+        .needs-work { 
+            background: #fee2e2; 
+            border-color: #ef4444; 
+        }
+        .checklist { 
+            background: #e0f2fe; 
+            border: 2px solid #0284c7; 
+            padding: 15px; 
+            margin: 20px 0; 
+            border-radius: 8px;
+        }
+        .checklist ul { 
+            margin: 10px 0; 
+        }
+        .checklist li { 
+            margin: 5px 0; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Machine Vision Comparison: Template vs Generated PDF</h1>
+        
+        <div class="analysis">
+            <h3>🎯 Comparison Objective</h3>
+            <p><strong>Goal:</strong> Use machine vision analysis to compare the generated PDF against the original template and identify styling discrepancies that need correction.</p>
+        </div>
+        
+        <div class="comparison-set">
+            <h2>📄 Page 1: Cover Letter Comparison</h2>
+            <div class="page-comparison">
+                <div class="image-container">
+                    <h3 class="template">📋 TEMPLATE (Original)</h3>
+                    <img src="template-page-1.png" alt="Template Page 1" />
+                </div>
+                <div class="image-container">
+                    <h3 class="generated">🔧 GENERATED (Current)</h3>
+                    <img src="test_outputs/generated-page-1.png" alt="Generated Page 1" />
+                </div>
+            </div>
+            
+            <div class="checklist">
+                <h4>✅ Cover Letter Analysis Checklist:</h4>
+                <ul>
+                    <li>🔤 <strong>Font Family:</strong> Times Roman consistency</li>
+                    <li>🎨 <strong>Title Color:</strong> Should be professional blue vs black</li>
+                    <li>🖼️ <strong>Header Graphics:</strong> Missing logo/graphics from template</li>
+                    <li>📐 <strong>Layout Spacing:</strong> Margin and padding consistency</li>
+                    <li>📅 <strong>Date Format:</strong> Professional formatting match</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="comparison-set">
+            <h2>📊 Page 2: Invoice Table Comparison</h2>
+            <div class="page-comparison">
+                <div class="image-container">
+                    <h3 class="template">📋 TEMPLATE (Original)</h3>
+                    <img src="template-page-2.png" alt="Template Page 2" />
+                </div>
+                <div class="image-container">
+                    <h3 class="generated">🔧 GENERATED (Current)</h3>
+                    <img src="test_outputs/generated-page-2.png" alt="Generated Page 2" />
+                </div>
+            </div>
+            
+            <div class="checklist">
+                <h4>🎨 Table Styling Analysis Checklist:</h4>
+                <ul>
+                    <li>🎨 <strong>Header Background:</strong> Blue-gray vs current color</li>
+                    <li>📝 <strong>Header Text:</strong> White text on colored background</li>
+                    <li>🌈 <strong>Alternating Rows:</strong> White vs light gray pattern</li>
+                    <li>📏 <strong>Border Style:</strong> Color and thickness match</li>
+                    <li>📊 <strong>Column Alignment:</strong> Text positioning consistency</li>
+                    <li>🔤 <strong>Font Consistency:</strong> Same font throughout</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="analysis needs-work">
+            <h3>🔧 Identified Issues (Visual Analysis)</h3>
+            <p><strong>Based on side-by-side comparison, here are the discrepancies to fix:</strong></p>
+            <ol>
+                <li><strong>Missing Header Graphics:</strong> Template has embedded logo/graphics</li>
+                <li><strong>Title Color:</strong> Check if title needs blue coloring</li>
+                <li><strong>Table Header Color:</strong> May need adjustment to match template</li>
+                <li><strong>Alternating Row Colors:</strong> Fine-tune the gray tones</li>
+                <li><strong>Overall Typography:</strong> Ensure exact font matching</li>
+            </ol>
+        </div>
+        
+        <div class="analysis">
+            <h3>🎯 Next Iteration Steps</h3>
+            <ol>
+                <li>📊 Analyze the visual differences more precisely</li>
+                <li>🎨 Adjust colors based on visual feedback</li>
+                <li>🔧 Update TemplateInvoiceGenerator.js</li>
+                <li>📄 Generate new test PDF</li>
+                <li>👁️ Repeat visual comparison</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
