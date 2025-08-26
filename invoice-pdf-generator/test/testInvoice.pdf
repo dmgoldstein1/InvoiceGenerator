@@ -1,0 +1,7 @@
+The file test/testInvoice.pdf is intended to be a sample output PDF for the invoice, which cannot be generated as text content. Instead, it should be created using a PDF generation library based on the specifications provided in the project.
+
+Since I cannot create a PDF file directly, I will provide a comment indicating that this file is intentionally left blank, as it will be generated programmatically during the execution of the application.
+
+Here are the contents for the file:
+
+<!-- This file is intentionally left blank. It will be generated programmatically during the execution of the application. -->

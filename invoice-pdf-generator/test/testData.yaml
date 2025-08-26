@@ -1,0 +1,38 @@
+invoice:
+  date: "2023-10-01"
+  due_date: "2023-10-15"
+  bill_to:
+    name: "John Doe"
+    address: 
+      street: "123 Main St"
+      city: "Anytown"
+      state: "CA"
+      zip: "12345"
+  items:
+    - description: "Web Development Services"
+      quantity: 10
+      unit_price: 50
+      total: 500
+    - description: "Graphic Design Services"
+      quantity: 5
+      unit_price: 75
+      total: 375
+  subtotal: 875
+  tax: 87.5
+  total: 962.5
+
+cover_letter:
+  recipient_name: "John Doe"
+  recipient_address: 
+    street: "123 Main St"
+    city: "Anytown"
+    state: "CA"
+    zip: "12345"
+  subject: "Invoice for Services Rendered"
+  body: |
+    Dear John Doe,
+
+    Thank you for your business. Please find attached the invoice for the services rendered. If you have any questions, feel free to reach out.
+
+    Best regards,
+    Your Company Name
