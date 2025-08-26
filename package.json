@@ -1,0 +1,30 @@
+{
+  "name": "invoicegenerator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node generator.js cover_letter_and_invoice_example.yaml test-latest",
+    "generate": "node generator.js",
+    "start": "node generator.js",
+    "dev": "node generator.js cover_letter_and_invoice_example.yaml dev-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmgoldstein1/InvoiceGenerator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dmgoldstein1/InvoiceGenerator/issues"
+  },
+  "homepage": "https://github.com/dmgoldstein1/InvoiceGenerator#readme",
+  "dependencies": {
+    "handlebars": "^4.7.8",
+    "js-yaml": "^4.1.0",
+    "moment": "^2.30.1",
+    "pdfkit": "^0.17.1",
+    "puppeteer": "^24.17.0"
+  }
+}
