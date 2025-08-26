@@ -26,5 +26,5 @@ If you are generating code that involves data manipulation or storage, ensure th
 If you are generating code that involves asynchronous operations, ensure that it handles concurrency correctly.
 Once you are finished generating code, check the Problems tab. If there are any issues, address them before finalizing the code.
 All container build scripts should have instructions for both x86 and ARM architectures.
-If you are testing code, use all available logging capabilities at their most verbose level, and save those logs with a name that has <PROCESS_NAME>-log-<UNIX_TIMESTAMP>.log.
+If you are testing code, use all available logging capabilities at their most verbose level, and save those logs to logs/<PROCESS_NAME>-log-<UNIX_TIMESTAMP>.log.
 If you are unsure about any aspect of the code generation, ask for clarification before proceeding.

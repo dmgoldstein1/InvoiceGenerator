@@ -1,0 +1,61 @@
+{
+    "editor.minimap.enabled": false,
+    "git.path": "/usr/bin/git",
+    "github.copilot.advanced": {
+        
+
+
+        "authProvider": "github"
+    },
+    "liveServer.settings.donotShowInfoMsg": true,
+    "playwright.env": {
+        
+    },
+    "github.copilot-chat.provider": "ollama",
+    "github.copilot-chat.ollama.endpoint": "http://localhost:11434",
+    "github.copilot-chat.ollama.model": "deepseek-r1:70b",
+    "chat.mcp.serverSampling": {
+        "Global in Code: playwright": {
+            "allowedModels": [
+                "github.copilot-chat/gpt-4.1",
+                "github.copilot-chat/claude-3.5-sonnet",
+                "github.copilot-chat/Ollama-deepseek-coder-v2:16b",
+                "github.copilot-chat/Ollama-deepseek-r1:70b",
+                "github.copilot-chat/gemini-2.0-flash-001",
+                "github.copilot-chat/gpt-4o",
+                "github.copilot-chat/Ollama-llama3.1:8b",
+                "github.copilot-chat/o3-mini"
+            ]
+        }
+    },
+    "amazonQ.suppressPrompts": {
+        "codeWhispererConnectionExpired": true,
+        "amazonQChatDisclaimer": true
+    },
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "github.copilot.chat.edits.temporalContext.enabled": true,
+    "github.copilot.chat.languageContext.fix.typescript.enabled": true,
+    "github.copilot.chat.languageContext.inline.typescript.enabled": true,
+    "github.copilot.chat.languageContext.typescript.enabled": true,
+    "githubPullRequests.codingAgent.uiIntegration": true,
+    "git.autofetch": true,
+    "github.copilot.chat.scopeSelection": true,
+    "github.copilot.chat.agent.thinkingTool": true,
+    "github.copilot.chat.generateTests.codeLens": true,
+    "github.copilot.chat.codesearch.enabled": true,
+    "terminal.integrated.focusAfterRun": "terminal",
+    "chat.tools.terminal.autoApprove": {
+        "*": true,
+    },
+    "chat.agent.maxRequests": 99,
+    "terminal.integrated.allowedLinkSchemes": [
+        "file",
+        "http",
+        "https",
+        "mailto",
+        "vscode",
+        "vscode-insiders",
+        "docker-desktop"
+    ],
+    "redhat.telemetry.enabled": false
+}
