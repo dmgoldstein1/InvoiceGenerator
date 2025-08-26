@@ -5,3 +5,7 @@ I'd like you to study "Invoice 21 for SAV-for-template.pdf" and "Invoice 23 for 
 Also study "cover_letter_and_invoice_example.yaml". You'll see that the YAML file contains the data that was formatted and designed to make the PDFs. The YAML is the raw information, and the PDFs are the manually formatted final product.
 
 Your task it to create a node.JS project that I can input a YAML file into with all information in the both the cover letter and the invoice, and it will output a PDF that follows all the visual design rules in the sample PDF. Use the provided data to test your code, fix bugs and iterate to see how it performs. Save each test PDF file. Learn from each test, iterate, debug, improve and test again until you are satisfied that any cover letter and invoice data fed into the engine will produce a PDF file that complies with the style of the template.
+
+---
+
+This is a good start, but you're still not using my two template PDFs as graphic design references. You picked a different font entirely when you should have used Arial. You neglected to use the header picture embedded in the PDF. You used the wrong shades of blue. You totally messed up the spacing of the invoice, so the text actually goes off the page on the right side. Please make the generated PDFS and aesthetic and visual match for the template PDFS.
