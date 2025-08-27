@@ -8,4 +8,9 @@ Your task it to create a node.JS project that I can input a YAML file into with 
 
 ---
 
-This is a good start, but you're still not using my two template PDFs as graphic design references. You picked a different font entirely when you should have used Arial. You neglected to use the header picture embedded in the PDF. You used the wrong shades of blue. You totally messed up the spacing of the invoice, so the text actually goes off the page on the right side. Please make the generated PDFS and aesthetic and visual match for the template PDFS.
+This is a good start, but you're still not using my two template PDFs as graphic design references. You picked a different font entirely when you should have used Arial. You neglected to use the header picture embedded in the PDF. You used the wrong shades of blue. You totally messed up the spacing of the invoice, so the text actually goes off the page on the right side. Please make the generated PDFS and aesthetic and visual match for the template PDFs.
+
+---
+
+Use machine vision as well as standard methods to determine the visual and stylistic and differences, between the template PDFs and the latest test outputs. Once you identify the differences, fix the code base to make them go away, so they are all similar in style and design. Then generate it again, test with machine vision and standard methods, and keep looping, debugging, iterating and testing until you are satisfied that any cover letter and invoice data fed into the engine will produce a PDF file that complies with the style of the template.
+
