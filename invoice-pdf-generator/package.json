@@ -1,0 +1,13 @@
+{
+  "name": "invoice-pdf-generator",
+  "version": "1.0.0",
+  "description": "A Node.js project to generate PDFs from YAML input based on a design template.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "pdfmake": "^0.1.68"
+  }
+}
